@@ -26,9 +26,9 @@ public class Program {
 	static final Scalar COLOR_BLUE = new Scalar(255, 191, 0);
 	static final Scalar COLOR_YELLOW = new Scalar(0, 255, 255);
 	
-	public static void processImage(String srcpath, String dstpath) {
-		// Load the native library.
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+	public static double processImage(String srcpath, String dstpath) {
+		
+		double startTime = System.currentTimeMillis();
 
 		// Load image
 		Mat rawImage = Highgui.imread(srcpath);
@@ -46,6 +46,8 @@ public class Program {
 
 		// Write output
 		Highgui.imwrite(dstpath, rawImage);
+		
+		return (System.currentTimeMillis() - startTime) / 1000.0;
 	}
 
 	public static void thresholdHSV(Mat rawRGBImage, Mat binaryDst) {
@@ -142,6 +144,9 @@ public class Program {
 	}
 	
 	public static void main(String[] args) {
+		// Load the native library.
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		
 		// Process all images in the testing folder
 		File folder = new File("images/src");
 		File[] listOfFiles = folder.listFiles();
@@ -151,8 +156,12 @@ public class Program {
 			System.out.println("FILE: " + listOfFiles[i].getName());
 			System.out.println();
 			if (listOfFiles[i].isFile()) {
-				processImage("images/src/" + listOfFiles[i].getName(),
+				double dt = processImage("images/src/" + listOfFiles[i].getName(),
 						"images/dst/" + listOfFiles[i].getName());
+				
+				System.out.println("Time Elapsed: " + dt);
+				System.out.println("FPS: " + 1.0/dt);
+				System.out.println();
 			}
 		}
 	}
