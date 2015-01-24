@@ -1,6 +1,8 @@
 
 package org.usfirst.frc.team79.robot;
 
+import org.usfirst.frc.team79.robot.camera.TrackTotes;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -19,6 +21,7 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
+    	
     }
 	
 	public void disabledPeriodic() {
@@ -36,6 +39,7 @@ public class Robot extends IterativeRobot {
     }
 
     public void teleopInit() {
+    	(new TrackTotes()).start(); // Start tote tracking command
     }
 
     /**
