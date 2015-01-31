@@ -22,15 +22,11 @@ public class TrackTotes extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	if(!trackingStarted){
-    		if(vision.cameraConnected()){
+    		if(vision.cameraConnected() && vision.processingImage()){
     			trackingStarted = true;
     		}
     	} else {
-    		// Fun things
-    		// Most likely will not need a "TrackTotes" Command
-    		// Can probably just call VisionService which would return
-    		// the x displacement from the tote.
-    		// System.out.println("X DISPL: " + vision.getXDisplacement());
+    		System.out.println("X: " + vision.getToteX() + ", Y: " + vision.getToteY());
     	}
     }
 

@@ -88,15 +88,16 @@ public class Program {
 		// Calculate angle to center of box
 		double FOV_X = 58;
 		double xRot = center.x/(rawImage.width()/2)*FOV_X/2;
-		
-		String text = "X ROT: " + Double.toString(xRot);
+		String text = "WIDTH: " + Integer.toString(largestBound.width) + 
+				", HEIGHT: " + Integer.toString(largestBound.height);
+//		String text = "X ROT: " + Double.toString(xRot);
 		Core.putText(rawImage, text, new Point(20, rawImage.height()-40), Core.FONT_HERSHEY_COMPLEX_SMALL, 0.75, new Scalar(255,0,255));
 		
 		// Write output
 		Highgui.imwrite(dstpath, rawImage);
 		
 		return (System.currentTimeMillis() - startTime) / 1000.0;
-	}
+	}      
 	
 	public static void main(String[] args) {
 		// Load the native library.

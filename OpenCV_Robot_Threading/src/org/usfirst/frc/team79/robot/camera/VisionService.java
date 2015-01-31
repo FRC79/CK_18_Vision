@@ -16,7 +16,7 @@ import org.opencv.imgproc.Imgproc;
 
 public class VisionService {
 	
-	private static final String NATIVE_LIBRARY_PATH = "/usr/local/lib/lib_OpenCV/java/libopencv_java2410.so";
+	public static final String NATIVE_LIBRARY_PATH = "/usr/local/lib/lib_OpenCV/java/libopencv_java2410.so";
 	
 	private static final int FRAME_WIDTH = 320;
 	private static final int FRAME_HEIGHT = 240;
@@ -28,23 +28,28 @@ public class VisionService {
 	private static VideoCapture vcap;
 	private static int videoStreamAddress = 0; // represents /dev/video0
 	
+	private static volatile double toteX = 0, toteY = 0;
+	
 	private static Object rawImgMutex = new Object();
-	private static Object statusMutex = new Object();
+	private static Object measurementMutex = new Object();
 	
 	private static volatile Mat frame = new Mat();
 	private static volatile AtomicBoolean cameraConnected = new AtomicBoolean(false);
 	private static volatile AtomicBoolean processingImage = new AtomicBoolean(false);
 	
 	private VisionService(){
-		// Load the native library.
-		System.load(NATIVE_LIBRARY_PATH);
-		
 		// Start video capture thread
 		Thread videoCaptureThread = new Thread(new VideoCaptureRunnable());
+		Thread imgprocThread = new Thread(new ImageProcessingRunnable());
 		videoCaptureThread.start();
+		imgprocThread.start();
 	}
 	
 	public static VisionService getInstance(){
+		if(service == null){
+			service = new VisionService();
+		}
+		
 		return service;
 	}
 	
@@ -54,6 +59,18 @@ public class VisionService {
 	
 	public boolean processingImage(){
 		return processingImage.get();
+	}
+	
+	public double getToteX(){
+		synchronized (measurementMutex) {
+			return toteX;
+		}
+	}
+	
+	public double getToteY(){
+		synchronized (measurementMutex) {
+			return toteY;
+		}
 	}
 	
 	private class VideoCaptureRunnable implements Runnable {
@@ -230,6 +247,10 @@ public class VisionService {
 			center.y = -(center.y - rawImage.height()/2.0);
 			
 			// Calculate distance here
+			synchronized (measurementMutex) {
+				toteX = center.x;
+				toteY = center.y;
+			}
 			
 			// Output image (probably will need an "output frame" with a mutex
 			// to allow for the server to catch it as well

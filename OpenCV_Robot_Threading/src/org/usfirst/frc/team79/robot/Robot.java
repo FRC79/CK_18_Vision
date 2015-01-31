@@ -2,6 +2,7 @@
 package org.usfirst.frc.team79.robot;
 
 import org.usfirst.frc.team79.robot.camera.TrackTotes;
+import org.usfirst.frc.team79.robot.camera.VisionService;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -21,7 +22,8 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
-    	
+    	// Load the native library.
+    	System.load(VisionService.NATIVE_LIBRARY_PATH);
     }
 	
 	public void disabledPeriodic() {
