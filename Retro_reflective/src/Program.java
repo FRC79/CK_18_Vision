@@ -22,9 +22,10 @@ public class Program {
 	public static final double VAL_MAX = 255;
 
 	// Colors
-	static final Scalar COLOR_GREEN = new Scalar(0, 255, 0);
+	static final Scalar COLOR_GREEN = new Scalar(100, 255, 0);
 	static final Scalar COLOR_BLUE = new Scalar(255, 191, 0);
 	static final Scalar COLOR_YELLOW = new Scalar(0, 255, 255);
+	static final Scalar COLOR_RED = new Scalar(0, 0, 255);
 	
 	public static double processImage(String srcpath, String dstpath) {
 		
@@ -136,10 +137,37 @@ public class Program {
 	public static void scoreContours(Mat rawImage, List<SmartContour> contours){
 
 		// Iterate through contours and score to see if they meet criteria
+		// BE CAREFULL WITH MIN AREA (different for 320x240)
+		SmartContour cLeft = null, cRight = null;
 		for(SmartContour c : contours){
 			if(c.getAspectRatio() > 0.80 && c.getAspectRatio() < 2.0 && c.getArea() > 1200){
-				Core.circle(rawImage, c.getCenter(), 3, COLOR_BLUE, -3);
+				if(c.isLeft()){
+					if(cLeft == null){
+						cLeft = c;
+					}
+				}
+				if(c.isRight()){
+					if(cRight == null){
+						cRight = c;
+					}
+				}
 			}
+		}
+		
+		Core.line(rawImage, new Point(rawImage.width()/4, 0), 
+				new Point(rawImage.width()/4, rawImage.height()), 
+				COLOR_BLUE, 5);
+		
+		if(cLeft != null){
+			Core.circle(rawImage, cLeft.getCenter(), 5, COLOR_GREEN, -5);
+			Core.rectangle(rawImage, cLeft.getTopLeft(), cLeft.getBottomRight(), COLOR_GREEN, 3);
+		}
+		
+		if(cRight != null){
+			Core.rectangle(rawImage, cRight.getTopLeft(), cRight.getBottomRight(), COLOR_YELLOW, 3);
+			Core.line(rawImage, new Point(rawImage.width()/4, cRight.getCenter().y), 
+					cRight.getCenter(), COLOR_RED, 5);
+			Core.circle(rawImage, cRight.getCenter(), 5, COLOR_YELLOW, -5);
 		}
 	}
 	
